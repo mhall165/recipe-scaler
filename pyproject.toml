@@ -1,0 +1,18 @@
+[project]
+name = "recipescale"
+version = "0.1.0"
+description = "Scale recipe ingredient lists up or down without losing your fractions."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "mhall165"}]
+
+[project.scripts]
+recipescale = "recipescale.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["recipescale"]
