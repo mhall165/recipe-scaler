@@ -74,6 +74,18 @@ $ recipescale messy.txt --factor 2 --lenient
 2 pinch of salt
 ```
 
+Convert volume units after scaling with `--to-unit`. Ingredients measured in
+tsp, tbsp, cup, ml, or l are converted; anything else (weight, "clove",
+"pinch", ...) is left alone:
+
+```
+$ recipescale pasta.txt --factor 2 --to-unit tbsp
+48 tbsp flour
+4 large eggs
+1/3 tbsp salt
+8 tbsp olive oil
+```
+
 ## Library
 
 ```python
@@ -87,6 +99,5 @@ for ing in scale_ingredients(ingredients, factor):
 
 ## Status
 
-Early skeleton. Volume/weight unit conversion, a recipe file format with a
-servings header, and a test suite are not built yet -- see the issues for
-what's next.
+Early skeleton. Weight unit conversion, a recipe file format with a servings
+header, and a test suite are not built yet -- see the issues for what's next.

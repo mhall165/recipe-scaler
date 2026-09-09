@@ -7,9 +7,10 @@ import sys
 from fractions import Fraction
 from typing import List, Optional
 
-from .ingredient import IngredientError, parse_line
+from .ingredient import IngredientError, convert_unit, parse_line
 from .quantities import QuantityError
 from .scaling import scale_factor, scale_ingredients
+from .units import UnitError
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -41,6 +42,13 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="tolerate messy input (ranges, missing quantities, odd units) "
         "instead of failing on the first line that doesn't parse",
+    )
+    parser.add_argument(
+        "--to-unit",
+        type=str,
+        metavar="UNIT",
+        help="convert volume-unit ingredients (tsp/tbsp/cup/ml/l) to this "
+        "unit after scaling; ingredients in other units are left as-is",
     )
     return parser
 
@@ -85,8 +93,15 @@ def main(argv: Optional[List[str]] = None) -> int:
                 return 1
             continue
 
-    for scaled in scale_ingredients(ingredients, factor):
-        print(scaled.render())
+    scaled = scale_ingredients(ingredients, factor)
+    if args.to_unit:
+        try:
+            scaled = [convert_unit(ing, args.to_unit) for ing in scaled]
+        except UnitError as exc:
+            raise SystemExit(f"invalid --to-unit: {exc}")
+
+    for ing in scaled:
+        print(ing.render())
     return 0
 
 

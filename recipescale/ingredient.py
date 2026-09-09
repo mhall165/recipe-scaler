@@ -7,6 +7,7 @@ from fractions import Fraction
 from typing import Optional
 
 from .quantities import QuantityError, format_quantity, parse_quantity
+from .units import convert_volume, is_volume_unit, normalize_volume_unit
 
 # Units we recognize by name. Anything else in the second token position is
 # treated as the start of the ingredient name (so "2 large eggs" works fine
@@ -102,3 +103,16 @@ def parse_line(line: str, *, lenient: bool = False) -> Ingredient:
             raise IngredientError(f"no ingredient name in {raw!r}")
 
     return Ingredient(quantity, unit, name, raw)
+
+
+def convert_unit(ingredient: Ingredient, to_unit: str) -> Ingredient:
+    """Convert an ingredient's quantity into a different volume unit.
+
+    Ingredients with no unit, or a non-volume unit ("clove", "pinch", weight
+    units, etc.), are returned unchanged -- there's nothing to convert them
+    to yet.
+    """
+    if ingredient.unit is None or not is_volume_unit(ingredient.unit):
+        return ingredient
+    new_quantity = convert_volume(ingredient.quantity, ingredient.unit, to_unit)
+    return Ingredient(new_quantity, normalize_volume_unit(to_unit), ingredient.name, ingredient.raw)
