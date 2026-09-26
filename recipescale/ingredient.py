@@ -7,7 +7,8 @@ from fractions import Fraction
 from typing import Optional
 
 from .quantities import QuantityError, format_quantity, parse_quantity
-from .units import convert_volume, is_volume_unit, normalize_volume_unit
+from .units import UnitError, convert_volume, is_volume_unit, normalize_volume_unit
+from .weights import convert_weight, is_weight_unit, normalize_weight_unit
 
 # Units we recognize by name. Anything else in the second token position is
 # treated as the start of the ingredient name (so "2 large eggs" works fine
@@ -106,13 +107,24 @@ def parse_line(line: str, *, lenient: bool = False) -> Ingredient:
 
 
 def convert_unit(ingredient: Ingredient, to_unit: str) -> Ingredient:
-    """Convert an ingredient's quantity into a different volume unit.
+    """Convert an ingredient's quantity into a different unit.
 
-    Ingredients with no unit, or a non-volume unit ("clove", "pinch", weight
-    units, etc.), are returned unchanged -- there's nothing to convert them
-    to yet.
+    `to_unit` must be a volume unit (tsp/tbsp/cup/ml/l) or a weight unit
+    (g/oz/lb/kg). Only ingredients already measured in that same category are
+    converted; anything else ("clove", "pinch", or the other category
+    entirely) is returned unchanged -- there's nothing sensible to convert it
+    to.
     """
-    if ingredient.unit is None or not is_volume_unit(ingredient.unit):
-        return ingredient
-    new_quantity = convert_volume(ingredient.quantity, ingredient.unit, to_unit)
-    return Ingredient(new_quantity, normalize_volume_unit(to_unit), ingredient.name, ingredient.raw)
+    if is_volume_unit(to_unit):
+        if ingredient.unit is None or not is_volume_unit(ingredient.unit):
+            return ingredient
+        new_quantity = convert_volume(ingredient.quantity, ingredient.unit, to_unit)
+        new_unit = normalize_volume_unit(to_unit)
+    elif is_weight_unit(to_unit):
+        if ingredient.unit is None or not is_weight_unit(ingredient.unit):
+            return ingredient
+        new_quantity = convert_weight(ingredient.quantity, ingredient.unit, to_unit)
+        new_unit = normalize_weight_unit(to_unit)
+    else:
+        raise UnitError(f"not a volume or weight unit: {to_unit!r}")
+    return Ingredient(new_quantity, new_unit, ingredient.name, ingredient.raw)

@@ -47,8 +47,9 @@ def _build_parser() -> argparse.ArgumentParser:
         "--to-unit",
         type=str,
         metavar="UNIT",
-        help="convert volume-unit ingredients (tsp/tbsp/cup/ml/l) to this "
-        "unit after scaling; ingredients in other units are left as-is",
+        help="convert ingredients measured in the same category to this "
+        "unit after scaling: volume (tsp/tbsp/cup/ml/l) or weight "
+        "(g/oz/lb/kg); ingredients in other units are left as-is",
     )
     return parser
 

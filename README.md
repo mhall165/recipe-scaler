@@ -74,9 +74,10 @@ $ recipescale messy.txt --factor 2 --lenient
 2 pinch of salt
 ```
 
-Convert volume units after scaling with `--to-unit`. Ingredients measured in
-tsp, tbsp, cup, ml, or l are converted; anything else (weight, "clove",
-"pinch", ...) is left alone:
+Convert units after scaling with `--to-unit`. Ingredients measured in the
+same category as the target unit are converted; volume (tsp, tbsp, cup, ml,
+l) and weight (g, oz, lb, kg) each convert only among themselves, and
+anything else ("clove", "pinch", ...) is left alone:
 
 ```
 $ recipescale pasta.txt --factor 2 --to-unit tbsp
@@ -84,6 +85,13 @@ $ recipescale pasta.txt --factor 2 --to-unit tbsp
 4 large eggs
 1/3 tbsp salt
 8 tbsp olive oil
+```
+
+Given `meat.txt` with `1 lb chicken thighs`:
+
+```
+$ recipescale meat.txt --factor 2 --to-unit oz
+32 oz chicken thighs
 ```
 
 ## Library
@@ -99,5 +107,5 @@ for ing in scale_ingredients(ingredients, factor):
 
 ## Status
 
-Early skeleton. Weight unit conversion, a recipe file format with a servings
-header, and a test suite are not built yet -- see the issues for what's next.
+Early skeleton. A recipe file format with a servings header and a test suite
+are not built yet -- see the issues for what's next.
